@@ -125,13 +125,16 @@ public class PatternLockView extends View {
     private int mDotAnimationDuration;
     private int mPathEndAnimationDuration;
 
-    private Paint mDotPaint;
+    private int mDotStrokeWidth = 4;
+    private int mDotStrokeRadios;
+
+    private Paint mDotPaint,mDotStrokePaint;
     private Paint mPathPaint;
 
     private List<PatternLockViewListener> mPatternListeners;
     // The pattern represented as a list of connected {@link Dot}
     private ArrayList<Dot> mPattern;
-
+    private boolean mOnlyShowDotInSelect;
     /**
      * Lookup table for the dots of the pattern we are currently drawing.
      * This will be the dots of the complete pattern unless we are animating,
@@ -228,6 +231,8 @@ public class PatternLockView extends View {
         mDotPaint = new Paint();
         mDotPaint.setAntiAlias(true);
         mDotPaint.setDither(true);
+        mDotStrokePaint = new Paint();
+        mDotStrokePaint.setAntiAlias(true);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && !isInEditMode()) {
@@ -320,7 +325,7 @@ public class PatternLockView extends View {
             for (int j = 0; j < sDotCount; j++) {
                 DotState dotState = mDotStates[i][j];
                 float centerX = getCenterXForColumn(j);
-                float size = dotState.mSize * dotState.mScale;
+                float size = !drawLookupTable[i][j] && mOnlyShowDotInSelect ? 0 : dotState.mSize * dotState.mScale;
                 float translationY = dotState.mTranslateY;
                 drawCircle(canvas, (int) centerX, (int) centerY + translationY,
                         size, drawLookupTable[i][j], dotState.mAlpha);
@@ -591,6 +596,21 @@ public class PatternLockView extends View {
         }
 
         requestLayout();
+        invalidate();
+    }
+
+    public void setDotStrokeWidth(int widthForDp){
+        mDotStrokeWidth = widthForDp;
+        invalidate();
+    }
+
+    public void setDotStrokeRadio(int radoiForDp){
+        mDotStrokeRadios = radoiForDp;
+        invalidate();
+    }
+
+    public void setOnlyShowDotInSelect(boolean show){
+        mOnlyShowDotInSelect = show;
         invalidate();
     }
 
@@ -1140,6 +1160,13 @@ public class PatternLockView extends View {
         mDotPaint.setColor(getCurrentColor(partOfPattern));
         mDotPaint.setAlpha((int) (alpha * 255));
         canvas.drawCircle(centerX, centerY, size / 2, mDotPaint);
+        mDotStrokePaint.setColor(getCurrentColor(partOfPattern));
+        mDotStrokePaint.setStrokeWidth(mDotStrokeWidth);
+        mDotStrokePaint.setStyle(Paint.Style.STROKE);  //绘制空心圆或 空心矩形,只显示边缘的线，不显示内部
+        if(mDotStrokeRadios == 0){
+            mDotStrokeRadios = (int) (mViewWidth / 8 * 3);
+        }
+        canvas.drawCircle(centerX, centerY,mDotStrokeRadios,mDotStrokePaint);
     }
 
     /**

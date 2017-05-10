@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         mPatternLockView = (PatternLockView) findViewById(R.id.patter_lock_view);
         mPatternLockView.setDotCount(3);
+        mPatternLockView.setOnlyShowDotInSelect(true);
         mPatternLockView.setDotNormalSize((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_dot_size));
         mPatternLockView.setDotSelectedSize((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_dot_selected_size));
         mPatternLockView.setPathWidth((int) ResourceUtils.getDimensionInPx(this, R.dimen.pattern_lock_path_width));
@@ -64,12 +65,13 @@ public class MainActivity extends AppCompatActivity {
         mPatternLockView.setViewMode(PatternLockView.PatternViewMode.CORRECT);
         mPatternLockView.setDotAnimationDuration(150);
         mPatternLockView.setPathEndAnimationDuration(100);
-        mPatternLockView.setCorrectStateColor(ResourceUtils.getColor(this, R.color.white));
+        mPatternLockView.setWrongStateColor(ResourceUtils.getColor(this,R.color.colorPrimary));
+        mPatternLockView.setNormalStateColor(ResourceUtils.getColor(this, R.color.mycolor));
+        mPatternLockView.setCorrectStateColor(ResourceUtils.getColor(this, R.color.colorAccent));
         mPatternLockView.setInStealthMode(false);
         mPatternLockView.setTactileFeedbackEnabled(true);
         mPatternLockView.setInputEnabled(true);
         mPatternLockView.addPatternLockListener(mPatternLockViewListener);
-
         RxPatternLockView.patternComplete(mPatternLockView)
                 .subscribe(new Consumer<PatternLockCompleteEvent>() {
                     @Override
